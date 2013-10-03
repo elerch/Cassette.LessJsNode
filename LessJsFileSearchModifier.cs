@@ -1,7 +1,7 @@
 
 namespace Cassette.Stylesheets
 {
-    public class LessFileSearchModifier : IFileSearchModifier<StylesheetBundle>
+    public class LessJsFileSearchModifier : IFileSearchModifier<StylesheetBundle>
     {
         public void Modify(FileSearch fileSearch)
         {

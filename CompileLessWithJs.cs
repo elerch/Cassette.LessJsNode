@@ -3,12 +3,12 @@ using Cassette.BundleProcessing;
 
 namespace Cassette.Stylesheets
 {
-    public class CompileLess : IBundleProcessor<StylesheetBundle>
+    public class CompileLessWithJs : IBundleProcessor<StylesheetBundle>
     {
-        readonly ILessCompiler lessCompiler;
+        readonly ILessJsCompiler lessCompiler;
         readonly CassetteSettings settings;
 
-        public CompileLess(ILessCompiler lessCompiler, CassetteSettings settings)
+        public CompileLessWithJs(ILessJsCompiler lessCompiler, CassetteSettings settings)
         {
             this.lessCompiler = lessCompiler;
             this.settings = settings;

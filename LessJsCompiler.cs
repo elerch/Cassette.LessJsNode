@@ -16,7 +16,7 @@ using Iesi.Collections.Generic;
 
 namespace Cassette.Stylesheets
 {
-    public class LessCompiler : ILessCompiler
+    public class LessJsCompiler : ILessJsCompiler
     {
         HashedSet<string> importedFilePaths;
 
@@ -38,7 +38,7 @@ namespace Cassette.Stylesheets
             }
             catch (Exception ex)
             {
-                throw new LessCompileException(
+                throw new LessJsCompileException(
                     string.Format("Error compiling {0}{1}{2}", context.SourceFilePath, Environment.NewLine, ex.Message),
                     ex
                 );
@@ -52,7 +52,7 @@ namespace Cassette.Stylesheets
                     Environment.NewLine,
                     errorLogger.ErrorMessage
                 );
-                throw new LessCompileException(exceptionMessage);
+                throw new LessJsCompileException(exceptionMessage);
             }
             else
             {
