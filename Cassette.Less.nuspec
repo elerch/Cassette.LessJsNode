@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!-- Cassette Shared Nuspec File; all packges share this -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <version>$version$</version>
+    <authors>Andrew Davey</authors>
+    <owners>Andrew Davey</owners>
+    <copyright>© 2011 Andrew Davey</copyright>
+    <licenseUrl>http://getcassette.net/licensing</licenseUrl>
+    <projectUrl>http://getcassette.net/</projectUrl>
+    <tags>web javascript coffeescript css html templates asp.net</tags>
+    <id>Cassette.Less</id>
+    <description>Less CSS compiler support for Cassette.</description>
+    <dependencies>
+      <dependency id="Cassette" version="$version$" />
+      <dependency id="DotlessClientOnly" version="1.3" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Cassette.Less.dll" target="lib\net40-client" />
+  </files>
+</package>
