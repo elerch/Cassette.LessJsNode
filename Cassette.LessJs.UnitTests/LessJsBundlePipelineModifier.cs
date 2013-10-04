@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-	public class LessBundlePipelineModifier_Tests
+	public class LessJsBundlePipelineModifier_Tests
 	{
 	    readonly StylesheetPipeline originalPipeline;
 	    readonly IBundlePipeline<StylesheetBundle> modifiedPipeline;
 
-	    public LessBundlePipelineModifier_Tests()
+	    public LessJsBundlePipelineModifier_Tests()
 	    {
             var minifier = Mock.Of<IStylesheetMinifier>();
             var urlGenerator = Mock.Of<IUrlGenerator>();

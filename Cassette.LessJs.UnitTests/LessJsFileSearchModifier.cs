@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class LessFileSearchModifier_Tests
+    public class LessJsFileSearchModifier_Tests
     {
         [Fact]
         public void ModifyAddsLessPattern()

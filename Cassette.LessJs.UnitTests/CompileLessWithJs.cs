@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class CompileLess_Tests
+    public class CompileLessWithJs_Tests
     {
         [Fact]
         public void GivenACompiler_WhenProcessCalled_ThenCompileAssetTransformerAddedToLessAsset()
