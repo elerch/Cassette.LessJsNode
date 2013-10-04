@@ -8,9 +8,9 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class LessCompiler_Compile
+    public class LessJsCompiler_Compile
     {
-        public LessCompiler_Compile()
+        public LessJsCompiler_Compile()
         {
             file = new Mock<IFile>();
             directory = new Mock<IDirectory>();
@@ -25,13 +25,13 @@ namespace Cassette.Stylesheets
                 RootDirectory = directory.Object,
                 SourceFilePath = "~/test.less"
             };
-            compiler = new LessCompiler();
+            compiler = new LessJsCompiler();
         }
 
         readonly Mock<IFile> file;
         readonly Mock<IDirectory> directory;
         readonly CompileContext compileContext;
-        readonly LessCompiler compiler;
+        readonly LessJsCompiler compiler;
 
         [Fact]
         public void Compile_converts_LESS_into_CSS()
@@ -43,7 +43,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void Compile_invalid_LESS_throws_exception()
         {
-            var exception = Assert.Throws<LessCompileException>(delegate
+            var exception = Assert.Throws<LessJsCompileException>(delegate
             {
                 compiler.Compile("#unclosed_rule {", compileContext);
             });
@@ -54,7 +54,7 @@ namespace Cassette.Stylesheets
         public void Compile_LESS_with_unknown_mixin_throws_exception()
         {
             var less = "form { \nmargin-bottom: @baseline; }";
-            var exception = Assert.Throws<LessCompileException>(delegate
+            var exception = Assert.Throws<LessJsCompileException>(delegate
             {
                 compiler.Compile(less, compileContext);
             });
@@ -64,7 +64,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void Compile_LESS_that_fails_parsing_throws_LessCompileException()
         {
-            var exception = Assert.Throws<LessCompileException>(delegate
+            var exception = Assert.Throws<LessJsCompileException>(delegate
             {
                 compiler.Compile("#fail { - }", compileContext);
             });
@@ -161,7 +161,7 @@ namespace Cassette.Stylesheets
         {
             StubFile("lib.css", ".mixin { color: red; }");
 
-            Assert.Throws<LessCompileException>(delegate
+            Assert.Throws<LessJsCompileException>(delegate
             {
                 compiler.Compile(
                     "@import \"lib.css\";\nbody{ .mixin; }",

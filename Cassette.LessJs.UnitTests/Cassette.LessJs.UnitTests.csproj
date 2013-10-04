@@ -61,14 +61,11 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq" Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
-      <HintPath>..\packages\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq" Condition="'$(TargetFrameworkVersion)' != 'v3.5'">
-      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Should">
-      <HintPath>..\packages\Should.1.1.12.0\lib\Should.dll</HintPath>
+      <HintPath>..\..\packages\Should.1.1.20\lib\Should.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,9 +74,8 @@
     <Reference Include="Microsoft.CSharp" Condition="'$(TargetFrameworkVersion)' != 'v3.5'" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="xunit, Version=1.9.1.1600, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
+    <Reference Include="xunit">
+      <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -92,17 +88,13 @@
     <Compile Include="LessBundlePipelineModifier.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cassette.Less\Cassette.Less.csproj">
-      <Project>{EC1BE4F4-A2A7-4154-9F4D-F75D1B1FD976}</Project>
-      <Name>Cassette.Less</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cassette.UnitTests\Cassette.UnitTests.csproj">
-      <Project>{F200A67A-D7B5-441B-AB36-69AA5C87577E}</Project>
-      <Name>Cassette.UnitTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Cassette\Cassette.csproj">
       <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
       <Name>Cassette</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cassette.LessJs.csproj">
+      <Project>{5f8df6f2-6b73-4518-bb5e-137adf7d9b33}</Project>
+      <Name>Cassette.LessJs</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

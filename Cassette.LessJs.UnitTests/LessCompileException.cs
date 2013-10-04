@@ -3,12 +3,12 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class LessCompileException_Tests
+    public class LessJsCompileException_Tests
     {
         [Fact]
         public void LessCompileExceptionConstructorAcceptsMessage()
         {
-            new LessCompileException("test").Message.ShouldEqual("test");
+            new LessJsCompileException("test").Message.ShouldEqual("test");
         }
     }
 }

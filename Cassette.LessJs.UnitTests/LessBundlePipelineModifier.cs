@@ -17,7 +17,7 @@ namespace Cassette.Stylesheets
 	    {
             var minifier = Mock.Of<IStylesheetMinifier>();
             var urlGenerator = Mock.Of<IUrlGenerator>();
-            var compiler = new Mock<ILessCompiler>();
+            var compiler = new Mock<ILessJsCompiler>();
 	        var settings = new CassetteSettings();
 
 	        var container = new TinyIoCContainer();
@@ -27,7 +27,7 @@ namespace Cassette.Stylesheets
 	        container.Register(settings);
 
             originalPipeline = new StylesheetPipeline(container, settings);
-            var modifier = new LessBundlePipelineModifier();
+            var modifier = new LessJsBundlePipelineModifier();
             modifiedPipeline = modifier.Modify(originalPipeline);
 	    }
 
