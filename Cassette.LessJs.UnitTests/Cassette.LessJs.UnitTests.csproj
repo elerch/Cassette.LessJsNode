@@ -88,6 +88,10 @@
     <Compile Include="LessBundlePipelineModifier.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Cassette.UnitTests\Cassette.UnitTests.csproj">
+      <Project>{f200a67a-d7b5-441b-ab36-69aa5c87577e}</Project>
+      <Name>Cassette.UnitTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Cassette\Cassette.csproj">
       <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
       <Name>Cassette</Name>
