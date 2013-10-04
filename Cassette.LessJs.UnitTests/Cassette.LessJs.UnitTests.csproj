@@ -92,7 +92,7 @@
     <Compile Include="LessBundlePipelineModifier.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cassette.Less\Cassette.Less.csproj">
+    <ProjectReference Include="..\..\Cassette.Less\Cassette.Less.csproj">
       <Project>{EC1BE4F4-A2A7-4154-9F4D-F75D1B1FD976}</Project>
       <Name>Cassette.Less</Name>
     </ProjectReference>
@@ -100,7 +100,7 @@
       <Project>{F200A67A-D7B5-441B-AB36-69AA5C87577E}</Project>
       <Name>Cassette.UnitTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cassette\Cassette.csproj">
+    <ProjectReference Include="..\..\Cassette\Cassette.csproj">
       <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
       <Name>Cassette</Name>
     </ProjectReference>
