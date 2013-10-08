@@ -76,7 +76,7 @@ namespace Cassette.Stylesheets
         {
             var fileSystem = new FakeFileSystem
             {
-                {"~/lib.less", "@color: white;"},
+                {"~/lib.less", "@color: #ffffff;"},
                 "~/test.less"
             };
             compileContext.RootDirectory = fileSystem;
@@ -85,7 +85,7 @@ namespace Cassette.Stylesheets
                 "@import \"lib\";\nbody{ color: @color }",
                 compileContext
             );
-            css.Output.ShouldEqual("body {\n  color: white;\n}\n");
+            css.Output.ShouldEqual("body {\n  color: #ffffff;\n}\n");
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace Cassette.Stylesheets
         {
             var fileSystem = new FakeFileSystem
             {
-                {"~/bundle-b/lib.less", "@color: red;"},
+                {"~/bundle-b/lib.less", "@color: #ff0000;"},
                 "~/bundle-a/test.less"
             };
             compileContext.RootDirectory = fileSystem;
@@ -103,7 +103,7 @@ namespace Cassette.Stylesheets
                 "@import \"../bundle-b/lib.less\";\nbody{ color: @color }",
                 compileContext
             );
-            css.Output.ShouldEqual("body {\n  color: red;\n}\n");
+            css.Output.ShouldEqual("body {\n  color: #ff0000;\n}\n");
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Cassette.Stylesheets
             var fileSystem = new FakeFileSystem
             {
                 { "~/_base.less", "@size: 100px;" },
-                { "~/bundle-b/_lib.less", "@import \"../_base.less\";\n@color: red; p { height: @size; }" },
+                { "~/bundle-b/_lib.less", "@import \"../_base.less\";\n@color: #ff0000; p { height: @size; }" },
                 { "~/bundle-a/test.less", source }
             };
             compileContext.SourceFilePath = "~/bundle-a/test.less";
@@ -124,7 +124,7 @@ namespace Cassette.Stylesheets
                 source,
                 compileContext
             );
-            css.Output.ShouldEqual("p {\n  height: 100px;\n}\nbody {\n  color: red;\n}\n");
+            css.Output.ShouldEqual("p {\n  height: 100px;\n}\nbody {\n  color: #ff0000;\n}\n");
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace Cassette.Stylesheets
             {
                 File.WriteAllText(Path.Combine(path, "main.less"), "@import 'first.less';\np { color: @c }");
                 File.WriteAllText(Path.Combine(path, "first.less"), "@import 'second.less';");
-                File.WriteAllText(Path.Combine(path, "second.less"), "@c: red;");
+                File.WriteAllText(Path.Combine(path, "second.less"), "@c: #ff0000;");
                 var directory = new FileSystemDirectory(path);
                 var file = directory.GetFile("main.less");
 
@@ -203,7 +203,7 @@ namespace Cassette.Stylesheets
                 compileContext.SourceFilePath = "~/main.less";
                 var css = compiler.Compile(file.OpenRead().ReadToEnd(), compileContext);
 
-                css.Output.ShouldContain("color: red;");
+                css.Output.ShouldContain("color: #ff0000;");
             }
         }
 
