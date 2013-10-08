@@ -174,7 +174,10 @@ namespace Cassette.Stylesheets
 
                 if (process.ExitCode == 0) {
                     using (var reader = process.StandardOutput) {
-                        paths = reader.ReadToEnd().Split('\n').Where(s => !string.IsNullOrWhiteSpace(s));
+                        paths = reader.ReadToEnd().Split('\n')
+                                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                                    .Select(s => s[0].ToString().ToLowerInvariant() + s.Substring(1))
+                                    .Select(s => s.Replace("\r","").Replace("\\", "/").Replace(applicationRootDirectory ?? "~", "~"));
                     }
                 } else {
                     using (StreamReader reader = process.StandardError) {
