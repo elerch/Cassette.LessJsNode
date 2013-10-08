@@ -11,23 +11,22 @@ namespace Cassette.Stylesheets
     public class LessJsCompiler : ILessJsCompiler
     {
         private CompileResult compileResult;
+        private Exception compileException;
+
         private string createdDirectory;
+        private string applicationRootDirectory;
         public CompileResult Compile(string source, CompileContext context)
         {
             var sourceFile = context.RootDirectory.GetFile(context.SourceFilePath);
             sourceFile = EnsureExists(source, sourceFile, context.RootDirectory);
             NormalizeSourceFile(sourceFile, source);
-            CompileResult result;
             try {
-                result = Compile(sourceFile);
+                var rootDirectory = sourceFile.Directory.GetDirectory("~/");
+                applicationRootDirectory = (string)rootDirectory.GetType().GetField("fullSystemPath", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance).GetValue(rootDirectory);
+                applicationRootDirectory = string.Format("{0}{1}", applicationRootDirectory[0].ToString().ToLowerInvariant(), applicationRootDirectory.Substring(1));
             }
-            catch (Exception ex) {
-                throw new LessJsCompileException(
-                    string.Format("Error compiling {0}{1}{2}", context.SourceFilePath, Environment.NewLine, ex.Message),
-                    ex
-                );
-            }
-            return result;
+            catch { }
+            return Compile(sourceFile);
         }
 
         private void NormalizeSourceFile(IFile sourceFile, string source)
@@ -133,8 +132,11 @@ namespace Cassette.Stylesheets
 
             const int SLEEP_AMOUNT = 20;
             var elapsedTime = new TimeSpan(0);
-            while (compileResult == null && (elapsedTime = elapsedTime.Add(new TimeSpan(0,0,0,0,SLEEP_AMOUNT))).TotalSeconds <= 30)
-                System.Threading.Thread.Sleep(SLEEP_AMOUNT);           
+            while (compileResult == null && compileException == null && (elapsedTime = elapsedTime.Add(new TimeSpan(0,0,0,0,SLEEP_AMOUNT))).TotalSeconds <= 30)
+                System.Threading.Thread.Sleep(SLEEP_AMOUNT);
+            if (compileException != null)
+                throw compileException;
+
             return compileResult;
         }
 
@@ -147,7 +149,7 @@ namespace Cassette.Stylesheets
                     compileResult = ProcessResult(process);
                 }
                 catch (Exception ex) {
-                    throw new LessJsCompileException("Less compilation failure", ex);
+                    compileException = ex;
                 }
 
                 process.Exited -= ProcessExited;
@@ -176,7 +178,10 @@ namespace Cassette.Stylesheets
                     }
                 } else {
                     using (StreamReader reader = process.StandardError) {
-                        throw new LessJsCompileException(ParseError(reader.ReadToEnd()).ToString());
+                        var message = ParseError(reader.ReadToEnd()).ToString();
+                        if (!string.IsNullOrWhiteSpace(applicationRootDirectory))
+                            message = message.Replace(applicationRootDirectory, "~");
+                        throw new LessJsCompileException(message.Replace('`', '\''));
                     }
                 }
             }
@@ -266,6 +271,11 @@ namespace Cassette.Stylesheets
             public int Column { get; set; }
             public string FileName { get; set; }
             public string Message { get; set; }
+
+            public override string ToString()
+            {
+                return Message + " on line " + Line + " in file '" + FileName + "'";
+            }
         }
     }
 }
