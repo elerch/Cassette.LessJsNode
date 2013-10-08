@@ -11,11 +11,12 @@ namespace Cassette.Stylesheets
     public class LessJsCompiler : ILessJsCompiler
     {
         private CompileResult compileResult;
-
+        private string createdDirectory;
         public CompileResult Compile(string source, CompileContext context)
         {
             var sourceFile = context.RootDirectory.GetFile(context.SourceFilePath);
-            sourceFile = EnsureExists(source, sourceFile);
+            sourceFile = EnsureExists(source, sourceFile, context.RootDirectory);
+            NormalizeSourceFile(sourceFile, source);
             CompileResult result;
             try {
                 result = Compile(sourceFile);
@@ -29,32 +30,73 @@ namespace Cassette.Stylesheets
             return result;
         }
 
-        private IFile EnsureExists(string source, IFile sourceFile)
+        private void NormalizeSourceFile(IFile sourceFile, string source)
+        {
+            // Strictly to overcome limitations in unit testing where the file is empty but
+            // the source is filled in.  We'll compare file contents to passed in source and 
+            // overwrite the file if the two don't match.  What a PITA.
+            string fileSource;
+            using (var reader = new StreamReader(sourceFile.OpenRead())) {
+                fileSource = reader.ReadToEnd();
+                reader.Close();
+            }
+            if (fileSource != source) {
+                using (var writer = new StreamWriter(sourceFile.Open(FileMode.Open, FileAccess.Write, FileShare.None))) {
+                    writer.Write(source);
+                    writer.Flush();
+                    writer.Close();
+                }
+            }
+        }
+
+        private IFile EnsureExists(string source, IFile sourceFile, IDirectory rootDirectory)
         {
             if (sourceFile.Exists && sourceFile is FileSystemFile)
                 return sourceFile;
-            
-            var directory = sourceFile.Directory;
-            Tuple<IDirectory, string> directoryInfo;
-            directoryInfo = CreateDirectory(sourceFile.Directory);
-            directory = directoryInfo.Item1;
 
-            using (var file = directory.GetFile(sourceFile.FullPath).Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {               
-                var sourceBytes = System.Text.UTF8Encoding.UTF8.GetBytes(source);
-                file.Write(sourceBytes, 0, sourceBytes.Length);
-                file.Flush();
-                file.Close();
+            var destinationDirectoryInfo = CreateDirectory("~/");
+            IFile excludeFile = null;
+            if (!sourceFile.Exists){
+                using (var reader = sourceFile.OpenRead()) {
+                    if (reader == null) {
+                        Copy(sourceFile, destinationDirectoryInfo.Item1, () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes(source)));
+                        excludeFile = sourceFile;
+                    }
+                }
             }
-
-            return new FileSystemFile(sourceFile.FullPath, directory, Path.Combine(directoryInfo.Item2, sourceFile.FullPath.Substring(2)));
+            // Marshal to something on the filesystem - lessc.wsf depends on it!
+            Marshal(rootDirectory, destinationDirectoryInfo.Item1, excludeFile);
+            return destinationDirectoryInfo.Item1.GetFile(sourceFile.FullPath);
         }
 
-        private Tuple<IDirectory, string> CreateDirectory(IDirectory directory)
+        private void Marshal(IDirectory source, IDirectory destination, IFile excludeFileFromCopy)
         {
-            if (directory.FullPath != null)
-                throw new NotImplementedException("debug me!");
-            var fullPath = GetTempFolder();
-            return Tuple.Create((IDirectory)new FileSystemDirectory(fullPath), fullPath);
+            //Copy(sourceFile, destination, sourceFile.OpenRead);
+            foreach (var sourceItem in source.GetFiles("*.*", SearchOption.AllDirectories).Where(f => f != excludeFileFromCopy)) {
+                Copy(sourceItem, destination, sourceItem.OpenRead);
+            }
+        }
+
+        private void Copy(IFile sourceFile, IDirectory directory, Func<Stream> sourceReader)
+        {
+            var destFile = directory.GetFile(sourceFile.FullPath);
+            
+            if (!destFile.Directory.Exists) destFile.Directory.Create();
+            using (var reader = sourceReader())
+            using (var destStream = destFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
+                if (reader == null) return; // e.g. this is a mock file
+                reader.CopyTo(destStream);
+                destStream.Flush();
+                destStream.Close();
+                reader.Close();
+            }
+        }
+
+        private Tuple<IDirectory, string> CreateDirectory(string fullPath)
+        {
+            var basePath = GetTempFolder();
+            var combinedPath = Path.Combine(basePath, fullPath.Substring(2));
+            return Tuple.Create((IDirectory)new FileSystemDirectory(combinedPath), combinedPath);
         }
 
         private string GetTempFolder()
@@ -64,12 +106,8 @@ namespace Cassette.Stylesheets
                 folder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             }
             System.IO.Directory.CreateDirectory(folder);
+            createdDirectory = folder;
             return folder;
-        }
-
-        private Storage.IsolatedStorageFile GetStore()
-        {
-            return Storage.IsolatedStorageFile.GetStore(Storage.IsolatedStorageScope.User | Storage.IsolatedStorageScope.Domain | Storage.IsolatedStorageScope.Assembly, null, null);
         }
 
         private CompileResult Compile(IFile source)
@@ -80,7 +118,7 @@ namespace Cassette.Stylesheets
             ProcessStartInfo start = new ProcessStartInfo(@"cscript");
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
-            start.Arguments = "//nologo \"" + GetExecutablePath() + "\" \"" + absolutePath + "\" \"" + output + "\"" + " -fileNames";
+            start.Arguments = "//nologo \"" + GetExecutablePath() + "\" \"" + absolutePath + "\" \"" + output + "\"" + " -filenames";
             start.EnvironmentVariables["output"] = output;
             start.EnvironmentVariables["fileName"] = source.FullPath;
             start.UseShellExecute = false;
@@ -95,13 +133,8 @@ namespace Cassette.Stylesheets
 
             const int SLEEP_AMOUNT = 20;
             var elapsedTime = new TimeSpan(0);
-            while (compileResult == null) {
-                elapsedTime.Add(new TimeSpan(0,0,0,0,SLEEP_AMOUNT));
-                if (elapsedTime.TotalSeconds > 30) {
-                    break;
-                }
-                System.Threading.Thread.Sleep(SLEEP_AMOUNT);
-            }
+            while (compileResult == null && (elapsedTime = elapsedTime.Add(new TimeSpan(0,0,0,0,SLEEP_AMOUNT))).TotalSeconds <= 30)
+                System.Threading.Thread.Sleep(SLEEP_AMOUNT);           
             return compileResult;
         }
 
@@ -118,6 +151,13 @@ namespace Cassette.Stylesheets
                 }
 
                 process.Exited -= ProcessExited;
+            }
+            try {
+                if (createdDirectory != null)
+                    System.IO.Directory.Delete(createdDirectory, true);
+            }
+            catch {
+
             }
         }
 
