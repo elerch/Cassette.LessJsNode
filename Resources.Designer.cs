@@ -61,6 +61,15 @@ namespace Cassette.Stylesheets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (function(definition){if(typeof define==&quot;function&quot;){define(definition)}else if(typeof YUI==&quot;function&quot;){YUI.add(&quot;es5&quot;,definition)}else{definition()}})(function(){function Empty(){}if(!Function.prototype.bind){Function.prototype.bind=function bind(that){var target=this;if(typeof target!=&quot;function&quot;){throw new TypeError(&quot;Function.prototype.bind called on incompatible &quot;+target)}var args=_Array_slice_.call(arguments,1);var bound=function(){if(this instanceof bound){var result=target.apply(this,args.concat(_Array_ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string es5 {
+            get {
+                return ResourceManager.GetString("es5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /*
         /// * LESS - Leaner CSS v1.4.2
         /// * http://lesscss.org
