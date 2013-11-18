@@ -55,7 +55,7 @@ namespace Cassette.Stylesheets
 
             var destinationDirectoryInfo = CreateDirectory("~/");
             IFile excludeFile = null;
-            if (!sourceFile.Exists){
+            if (!sourceFile.Exists) {
                 using (var reader = sourceFile.OpenRead()) {
                     if (reader == null) {
                         Copy(sourceFile, destinationDirectoryInfo.Item1, () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes(source)));
@@ -63,7 +63,7 @@ namespace Cassette.Stylesheets
                     }
                 }
             }
-            // Marshal to something on the filesystem - lessc.wsf depends on it!
+            // Marshal to something on the filesystem - node.exe depends on it!
             Marshal(rootDirectory, destinationDirectoryInfo.Item1, excludeFile);
             return destinationDirectoryInfo.Item1.GetFile(sourceFile.FullPath);
         }
@@ -79,7 +79,7 @@ namespace Cassette.Stylesheets
         private void Copy(IFile sourceFile, IDirectory directory, Func<Stream> sourceReader)
         {
             var destFile = directory.GetFile(sourceFile.FullPath);
-            
+
             if (!destFile.Directory.Exists) destFile.Directory.Create();
             using (var reader = sourceReader())
             using (var destStream = destFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
@@ -101,7 +101,7 @@ namespace Cassette.Stylesheets
         private string GetTempFolder()
         {
             string folder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            while (Directory.Exists(folder) || File.Exists(folder)){
+            while (Directory.Exists(folder) || File.Exists(folder)) {
                 folder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             }
             System.IO.Directory.CreateDirectory(folder);
@@ -114,16 +114,20 @@ namespace Cassette.Stylesheets
             string output = Path.GetTempFileName();
             // Assumes source is a Cassette.IO.FileSystemFile
             string absolutePath = (string)source.GetType().GetField("systemAbsoluteFilename", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance).GetValue(source);
-            ProcessStartInfo start = new ProcessStartInfo(@"cscript");
-            start.WindowStyle = ProcessWindowStyle.Hidden;
-            start.CreateNoWindow = true;
-            start.Arguments = "//nologo \"" + GetExecutablePath() + "\" \"" + absolutePath + "\" \"" + output + "\"" + " -filenames";
+            string arguments = String.Format("less\\bin\\lessc --relative-urls \"{0}\" \"{1}\"", absolutePath, output);
+            string tempPath = GetExecutablePath();
+
+            ProcessStartInfo start = new ProcessStartInfo("node.exe"){
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                Arguments = arguments,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                WorkingDirectory = tempPath
+            };
             start.EnvironmentVariables["output"] = output;
             start.EnvironmentVariables["fileName"] = source.FullPath;
-            start.UseShellExecute = false;
-            start.RedirectStandardError = true;
-            start.RedirectStandardOutput = true;
-
             Process p = new Process();
             p.StartInfo = start;
             p.EnableRaisingEvents = true;
@@ -132,7 +136,7 @@ namespace Cassette.Stylesheets
 
             const int SLEEP_AMOUNT = 20;
             var elapsedTime = new TimeSpan(0);
-            while (compileResult == null && compileException == null && (elapsedTime = elapsedTime.Add(new TimeSpan(0,0,0,0,SLEEP_AMOUNT))).TotalSeconds <= 30)
+            while (compileResult == null && compileException == null && (elapsedTime = elapsedTime.Add(new TimeSpan(0, 0, 0, 0, SLEEP_AMOUNT))).TotalSeconds <= 30)
                 System.Threading.Thread.Sleep(SLEEP_AMOUNT);
             if (compileException != null)
                 throw compileException;
@@ -177,7 +181,7 @@ namespace Cassette.Stylesheets
                         paths = reader.ReadToEnd().Split('\n')
                                     .Where(s => !string.IsNullOrWhiteSpace(s))
                                     .Select(s => s[0].ToString().ToLowerInvariant() + s.Substring(1))
-                                    .Select(s => s.Replace("\r","").Replace("\\", "/").Replace(applicationRootDirectory ?? "~", "~"));
+                                    .Select(s => s.Replace("\r", "").Replace("\\", "/").Replace(applicationRootDirectory ?? "~", "~"));
                     }
                 } else {
                     using (StreamReader reader = process.StandardError) {
@@ -242,17 +246,15 @@ namespace Cassette.Stylesheets
         private static string GetExecutablePath()
         {
             string tempPath = System.IO.Path.GetTempPath();
-            string wscript = tempPath + "lessc.wsf";
-            string es5shim = tempPath + "es5-shim.min.js";
-            string less = tempPath + "less-1.4.2.min.js";
+            string nodejs = tempPath + "node.exe";
+            string less = tempPath + "npm_less.zip";
 
             CreateIfNotExists(new Dictionary<string, string>{
-                {wscript, "lessc"},
-                {es5shim, "es5"}, 
-                {less, "less"}
+                {less, "npm_less"},
+                {nodejs, "node"},
             });
 
-            return wscript;
+            return tempPath;
         }
 
         private static void CreateIfNotExists(IEnumerable<KeyValuePair<string, string>> files)
@@ -264,8 +266,12 @@ namespace Cassette.Stylesheets
         private static void CreateIfNotExists(string path, string resourceKey)
         {
             if (File.Exists(path)) return;
-            string data = Resources.ResourceManager.GetString(resourceKey);
-            File.WriteAllText(path, data);
+            File.WriteAllBytes(path, (byte[])Resources.ResourceManager.GetObject(resourceKey));
+            if (resourceKey == "npm_less") {
+                using (var zip = Ionic.Zip.ZipFile.Read(path)) {
+                    zip.ExtractAll(System.IO.Path.GetDirectoryName(path));
+                }
+            }
         }
 
         private class CompilerError

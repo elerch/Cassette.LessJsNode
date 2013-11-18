@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class LessJsCompileException_Tests
+    public class LessJsNodeCompileException_Tests
     {
         [Fact]
         public void LessCompileExceptionConstructorAcceptsMessage()

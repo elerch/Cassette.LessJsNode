@@ -61,37 +61,21 @@ namespace Cassette.Stylesheets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (function(definition){if(typeof define==&quot;function&quot;){define(definition)}else if(typeof YUI==&quot;function&quot;){YUI.add(&quot;es5&quot;,definition)}else{definition()}})(function(){function Empty(){}if(!Function.prototype.bind){Function.prototype.bind=function bind(that){var target=this;if(typeof target!=&quot;function&quot;){throw new TypeError(&quot;Function.prototype.bind called on incompatible &quot;+target)}var args=_Array_slice_.call(arguments,1);var bound=function(){if(this instanceof bound){var result=target.apply(this,args.concat(_Array_ [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string es5 {
+        internal static byte[] node {
             get {
-                return ResourceManager.GetString("es5", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to /*
-        /// * LESS - Leaner CSS v1.4.2
-        /// * http://lesscss.org
-        /// *
-        /// * Copyright (c) 2009-2013, Alexis Sellier
-        /// * Licensed under the Apache 2.0 License.
-        /// *
-        /// * @licence
-        /// */(function(e,t){function n(t){return e.less[t.split(&quot;/&quot;)[1]]}function f(){r.env===&quot;development&quot;?(r.optimization=0,r.watchTimer=setInterval(function(){r.watchMode&amp;&amp;g(function(e,t,n,i,s){e?k(e,i.href):t&amp;&amp;S(t.toCSS(r),i,s.lastModified)})},r.poll)):r.optimization=3}function m(){var e=document.getElementsByTagName(&quot;style&quot;);for(var t=0;t&lt;e.length;t++)if(e[t] [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string less {
-            get {
-                return ResourceManager.GetString("less", resourceCulture);
+                object obj = ResourceManager.GetObject("node", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] node {
+        internal static byte[] npm_less {
             get {
-                object obj = ResourceManager.GetObject("node", resourceCulture);
+                object obj = ResourceManager.GetObject("npm_less", resourceCulture);
                 return ((byte[])(obj));
             }
         }

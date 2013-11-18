@@ -8,9 +8,9 @@ using Xunit;
 
 namespace Cassette.Stylesheets
 {
-    public class LessJsCompiler_Compile
+    public class LessJsNodeCompiler_Compile
     {
-        public LessJsCompiler_Compile()
+        public LessJsNodeCompiler_Compile()
         {
             file = new Mock<IFile>();
             directory = new Mock<IDirectory>();
