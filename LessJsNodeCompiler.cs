@@ -114,7 +114,7 @@ namespace Cassette.Stylesheets
             string output = Path.GetTempFileName();
             // Assumes source is a Cassette.IO.FileSystemFile
             string absolutePath = (string)source.GetType().GetField("systemAbsoluteFilename", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance).GetValue(source);
-            string arguments = String.Format("less\\bin\\lessc --relative-urls \"{0}\" \"{1}\"", absolutePath, output);
+            string arguments = String.Format("less\\bin\\lessc --no-color --relative-urls \"{0}\" \"{1}\"", absolutePath, output);
             string tempPath = GetExecutablePath();
 
             ProcessStartInfo start = new ProcessStartInfo("node.exe"){

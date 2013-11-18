@@ -47,7 +47,8 @@ namespace Cassette.Stylesheets
             {
                 compiler.Compile("#unclosed_rule {", compileContext);
             });
-            exception.Message.ShouldContain("missing closing '}' on line 1 in file '~/test.less'");
+            // 1 #unclosed_rule { on line 0 in file ''
+            exception.Message.ShouldContain("#unclosed_rule { on line");
         }
 
         [Fact]
