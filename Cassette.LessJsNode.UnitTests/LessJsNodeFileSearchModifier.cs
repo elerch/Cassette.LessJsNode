@@ -8,7 +8,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void ModifyAddsLessPattern()
         {
-            var modifier = new LessJsFileSearchModifier();
+            var modifier = new LessJsNodeFileSearchModifier();
             var fileSearch = new FileSearch();
             modifier.Modify(fileSearch);
             fileSearch.Pattern.ShouldContain("*.less");

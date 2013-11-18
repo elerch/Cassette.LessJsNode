@@ -22,7 +22,7 @@ namespace Cassette.Stylesheets
             var bundle = new StylesheetBundle("~");
             bundle.Assets.Add(asset.Object);
 
-            var processor = new ParseJsLessReferences();
+            var processor = new ParseNodeJsLessReferences();
             processor.Process(bundle);
 
             asset.Verify(a => a.AddReference("another1.less", 2));

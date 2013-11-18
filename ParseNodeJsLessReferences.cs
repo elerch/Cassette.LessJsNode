@@ -4,7 +4,7 @@ using Cassette.Scripts;
 
 namespace Cassette.Stylesheets
 {
-    public class ParseJsLessReferences : ParseReferences<StylesheetBundle>
+    public class ParseNodeJsLessReferences : ParseReferences<StylesheetBundle>
     {
         protected override bool ShouldParseAsset(IAsset asset)
         {

@@ -3,11 +3,11 @@ using Cassette.TinyIoC;
 namespace Cassette.Stylesheets
 {
     [ConfigurationOrder(20)]
-    public class LessJsServices : IConfiguration<TinyIoCContainer>
+    public class LessJsNodeServices : IConfiguration<TinyIoCContainer>
     {
         public void Configure(TinyIoCContainer container)
         {
-            container.Register<ILessJsCompiler, LessJsCompiler>().AsMultiInstance();
+            container.Register<ILessJsNodeCompiler, LessJsNodeCompiler>().AsMultiInstance();
         }
     }
 }

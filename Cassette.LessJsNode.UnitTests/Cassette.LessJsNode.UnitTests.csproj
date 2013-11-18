@@ -79,13 +79,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompileLessWithJs.cs" />
-    <Compile Include="LessJsCompileException.cs" />
-    <Compile Include="LessJsCompiler.cs" />
-    <Compile Include="LessJsFileSearchModifier.cs" />
-    <Compile Include="ParseLessReferences.cs" />
+    <Compile Include="CompileLessWithJsNode.cs" />
+    <Compile Include="LessJsNodeCompileException.cs" />
+    <Compile Include="LessJsNodeCompiler.cs" />
+    <Compile Include="LessJsNodeFileSearchModifier.cs" />
+    <Compile Include="ParseLessNodeReferences.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LessJsBundlePipelineModifier.cs" />
+    <Compile Include="LessJsNodeBundlePipelineModifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Cassette.UnitTests\Cassette.UnitTests.csproj">
@@ -96,7 +96,7 @@
       <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
       <Name>Cassette</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cassette.LessJs.csproj">
+    <ProjectReference Include="..\Cassette.LessJsNode.csproj">
       <Project>{5f8df6f2-6b73-4518-bb5e-137adf7d9b33}</Project>
       <Name>Cassette.LessJs</Name>
     </ProjectReference>

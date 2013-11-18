@@ -25,13 +25,13 @@ namespace Cassette.Stylesheets
                 RootDirectory = directory.Object,
                 SourceFilePath = "~/test.less"
             };
-            compiler = new LessJsCompiler();
+            compiler = new LessJsNodeCompiler();
         }
 
         readonly Mock<IFile> file;
         readonly Mock<IDirectory> directory;
         readonly CompileContext compileContext;
-        readonly LessJsCompiler compiler;
+        readonly LessJsNodeCompiler compiler;
 
         [Fact]
         public void Compile_converts_LESS_into_CSS()
@@ -43,7 +43,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void Compile_invalid_LESS_throws_exception()
         {
-            var exception = Assert.Throws<LessJsCompileException>(delegate
+            var exception = Assert.Throws<LessJsNodeCompileException>(delegate
             {
                 compiler.Compile("#unclosed_rule {", compileContext);
             });
@@ -54,7 +54,7 @@ namespace Cassette.Stylesheets
         public void Compile_LESS_with_unknown_mixin_throws_exception()
         {
             var less = "form { \nmargin-bottom: @baseline; }";
-            var exception = Assert.Throws<LessJsCompileException>(delegate
+            var exception = Assert.Throws<LessJsNodeCompileException>(delegate
             {
                 compiler.Compile(less, compileContext);
             });
@@ -64,7 +64,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void Compile_LESS_that_fails_parsing_throws_LessCompileException()
         {
-            var exception = Assert.Throws<LessJsCompileException>(delegate
+            var exception = Assert.Throws<LessJsNodeCompileException>(delegate
             {
                 compiler.Compile("#fail { - }", compileContext);
             });
@@ -161,7 +161,7 @@ namespace Cassette.Stylesheets
         {
             StubFile("lib.css", ".mixin { color: red; }");
 
-            Assert.Throws<LessJsCompileException>(delegate
+            Assert.Throws<LessJsNodeCompileException>(delegate
             {
                 compiler.Compile(
                     "@import \"lib.css\";\nbody{ .mixin; }",

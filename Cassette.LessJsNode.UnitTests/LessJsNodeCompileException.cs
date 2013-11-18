@@ -8,7 +8,7 @@ namespace Cassette.Stylesheets
         [Fact]
         public void LessCompileExceptionConstructorAcceptsMessage()
         {
-            new LessJsCompileException("test").Message.ShouldEqual("test");
+            new LessJsNodeCompileException("test").Message.ShouldEqual("test");
         }
     }
 }

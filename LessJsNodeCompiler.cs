@@ -8,7 +8,7 @@ using Storage = System.IO.IsolatedStorage;
 
 namespace Cassette.Stylesheets
 {
-    public class LessJsCompiler : ILessJsCompiler
+    public class LessJsNodeCompiler : ILessJsNodeCompiler
     {
         private CompileResult compileResult;
         private Exception compileException;
@@ -184,7 +184,7 @@ namespace Cassette.Stylesheets
                         var message = ParseError(reader.ReadToEnd()).ToString();
                         if (!string.IsNullOrWhiteSpace(applicationRootDirectory))
                             message = message.Replace(applicationRootDirectory, "~");
-                        throw new LessJsCompileException(message.Replace('`', '\''));
+                        throw new LessJsNodeCompileException(message.Replace('`', '\''));
                     }
                 }
             }

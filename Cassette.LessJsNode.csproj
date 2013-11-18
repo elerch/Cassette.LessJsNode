@@ -70,14 +70,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CompileLessWithJs.cs" />
-    <Compile Include="ILessJsCompiler.cs" />
-    <Compile Include="LessJsCompileException.cs" />
-    <Compile Include="LessJsCompiler.cs" />
-    <Compile Include="LessJsBundlePipelineModifier.cs" />
-    <Compile Include="LessJsFileSearchModifier.cs" />
-    <Compile Include="LessJsServices.cs" />
-    <Compile Include="ParseJsLessReferences.cs" />
+    <Compile Include="CompileLessWithJsNode.cs" />
+    <Compile Include="ILessJsNodeCompiler.cs" />
+    <Compile Include="LessJsNodeCompileException.cs" />
+    <Compile Include="LessJsNodeCompiler.cs" />
+    <Compile Include="LessJsNodeBundlePipelineModifier.cs" />
+    <Compile Include="LessJsNodeFileSearchModifier.cs" />
+    <Compile Include="LessJsNodeServices.cs" />
+    <Compile Include="ParseNodeJsLessReferences.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
