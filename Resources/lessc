@@ -5,7 +5,10 @@ var path = require('path'),
     sys = require('util'),
     os = require('os'),
     mkdirp;
-
+// Mod to output read files to stdout for processing
+var fsr = fs.readFile;
+fs.readFile = function(filename, options, callback) { process.stdout.write(filename + '\n'); fsr.apply(this, arguments); };
+// end mod
 var less = require('../lib/less');
 var args = process.argv.slice(1);
 var options = {
