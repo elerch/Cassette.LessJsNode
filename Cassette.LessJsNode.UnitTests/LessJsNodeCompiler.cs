@@ -47,8 +47,8 @@ namespace Cassette.Stylesheets
             {
                 compiler.Compile("#unclosed_rule {", compileContext);
             });
-            // 1 #unclosed_rule { on line 0 in file ''
-            exception.Message.ShouldContain("#unclosed_rule { on line");
+            // ParseError: missing closing '}' on line 1, column 16 in file '~/test.less'
+            exception.Message.ShouldContain("missing closing '}' on line 1, column 16 in file '~/test.less'");
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Cassette.Stylesheets
             {
                 compiler.Compile(less, compileContext);
             });
-            exception.Message.ShouldContain("variable @baseline is undefined on line 2 in file '~/test.less'");
+            exception.Message.ShouldContain("variable @baseline is undefined on line 2, column 16 in file '~/test.less'");
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Cassette.Stylesheets
             {
                 compiler.Compile("#fail { - }", compileContext);
             });
-            exception.Message.ShouldContain("Unrecognised input on line 1 in file '~/test.less'");
+            exception.Message.ShouldContain("Unrecognised input on line 1, column 9 in file '~/test.less'");
         }
 
         [Fact]
