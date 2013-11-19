@@ -186,8 +186,9 @@ namespace Cassette.Stylesheets
                 } else {
                     using (StreamReader reader = process.StandardError) {
                         var message = ParseError(reader.ReadToEnd()).ToString();
-                        if (!string.IsNullOrWhiteSpace(applicationRootDirectory))
-                            message = message.Replace(applicationRootDirectory, "~");
+                        if (!string.IsNullOrWhiteSpace(applicationRootDirectory)) {
+                            message = System.Text.RegularExpressions.Regex.Replace(message, applicationRootDirectory.Replace("/", "[/\\\\]"), "~", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                        }
                         throw new LessJsNodeCompileException(message.Replace('`', '\''));
                     }
                 }
@@ -220,6 +221,35 @@ namespace Cassette.Stylesheets
                     if (args[0].Trim() == "column" && int.TryParse(args[1], out columnNo))
                         result.Column = columnNo;
                 } else {
+                    // I believe Less 1.5 changed their error messaging and Windows Essentials hasn't kept up
+                    // We'll detect a 1.5 style error message and return the result immediately
+                    
+                    // ParseError: Unrecognised input in C:\Users\Emil\AppData\Local\Temp\2b354488-7d3e-40dd-ba51-41a23d152281\test.less on line 1, column 9:
+                    if (i == 0 && System.Text.RegularExpressions.Regex.IsMatch(line, @"^[A-Z][a-z]+Error: ")) {
+                        result.Message = line;
+                        var args = line.Split(',');
+                        if (args.Length > 1 && args[1].StartsWith(" column")) {
+                            var column = args[1].Substring(" column".Length).TrimEnd(':');
+                            int columnNo;
+                            if (int.TryParse(column, out columnNo))
+                                result.Column = columnNo;
+                        }
+                        if (args.Length > 0) {
+                            var matches = System.Text.RegularExpressions.Regex.Match(args[0], @"line (\d+)$");
+                            if (matches.Success && matches.Groups.Count > 1) {
+                                var lineStr = matches.Groups[1].Value;
+                                int lineNo;
+                                if (int.TryParse(lineStr, out lineNo))
+                                    result.Line = lineNo;
+                            }
+                        }
+                        var fileNameMatch = System.Text.RegularExpressions.Regex.Match(line, @" in ([a-zA-Z\\:.0-9\-/]+) on line \d+, column \d+:$");
+                        if (fileNameMatch.Success && fileNameMatch.Groups.Count > 1) {
+                            result.FileName = fileNameMatch.Groups[1].Value.Replace('\\', '/');
+                            result.Message = line.Substring(0, fileNameMatch.Groups[0].Index);
+                        }
+                        return result;
+                    }
                     if (i == 1 || i == 2)
                         result.Message += " " + line;
 
@@ -283,6 +313,8 @@ namespace Cassette.Stylesheets
 
             public override string ToString()
             {
+                if (Column != 0)
+                    return Message + " on line " + Line + ", column " + Column + " in file '" + FileName + "'";
                 return Message + " on line " + Line + " in file '" + FileName + "'";
             }
         }
