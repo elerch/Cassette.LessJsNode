@@ -117,7 +117,7 @@ namespace Cassette.Stylesheets
             string arguments = String.Format("less\\bin\\lessc --no-color --relative-urls \"{0}\" \"{1}\"", absolutePath, output);
             string tempPath = GetExecutablePath();
 
-            ProcessStartInfo start = new ProcessStartInfo("node.exe"){
+            ProcessStartInfo start = new ProcessStartInfo(Path.Combine(tempPath, "node.exe")){
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 Arguments = arguments,
