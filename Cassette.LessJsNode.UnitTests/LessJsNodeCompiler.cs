@@ -39,6 +39,18 @@ namespace Cassette.Stylesheets
             var css = compiler.Compile("@color: #4d926f; #header { color: @color; }", compileContext);
             css.Output.ShouldEqual("#header {\n  color: #4d926f;\n}\n");
         }
+        [Fact]
+        public void Compile_converts_LESS_1_6_0_Features()
+        {
+            var css = compiler.Compile("#myelm { color: rgba(-1,258,258, -1) }", compileContext);
+            css.Output.ShouldEqual("#myelm {\n  color: rgba(0, 255, 255, 0);\n}\n");
+        }
+        [Fact]
+        public void Compile_converts_LESS_1_7_0_Features()
+        {
+            var css = compiler.Compile("@keyframes: rgba(-1,258,258, -1);#myelm { color: @keyframes }", compileContext);
+            css.Output.ShouldEqual("#myelm {\n  color: rgba(0, 255, 255, 0);\n}\n");
+        }
 
         [Fact]
         public void Compile_invalid_LESS_throws_exception()
