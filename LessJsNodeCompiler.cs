@@ -295,13 +295,50 @@ namespace Cassette.Stylesheets
 
         private static void CreateIfNotExists(string path, string resourceKey)
         {
-            if (File.Exists(path)) return;
+            if (File.Exists(path)) {
+                assemblyDate = assemblyDate ?? RetrieveLinkerTimestamp(typeof(LessJsNodeCompiler).Assembly.Location);
+                if (!assemblyDate.HasValue) return;
+                var utcAssemblyDate = TimeZone.CurrentTimeZone.ToUniversalTime(assemblyDate.Value);
+                if (File.GetLastWriteTimeUtc(path) > utcAssemblyDate) return;
+            }            
             File.WriteAllBytes(path, (byte[])Resources.ResourceManager.GetObject(resourceKey));
             if (resourceKey == "npm_less") {
                 using (var zip = Ionic.Zip.ZipFile.Read(path)) {
-                    zip.ExtractAll(System.IO.Path.GetDirectoryName(path));
+                    zip.ExtractAll(System.IO.Path.GetDirectoryName(path), Ionic.Zip.ExtractExistingFileAction.OverwriteSilently);
                 }
             }
+        }
+
+        private static DateTime? assemblyDate;
+        /// <summary>
+        /// Retrieves the date/time that the assembly was linked
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns>Date/time the assembly was linked, or null if an error occurred</returns>
+        private static DateTime? RetrieveLinkerTimestamp(string filePath)
+        {
+            const int peHeaderOffset = 60;
+            const int linkerTimestampOffset = 8;
+
+            var b = new byte[2048];
+            try {
+                using (var s = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    s.Read(b, 0, 2048);
+            }
+            catch (Exception ex) {
+                Debug.WriteLine("Error reading assembly file to get linker timestamp.  Message: " + ex);
+                return null;
+            }
+
+            var i = BitConverter.ToInt32(b, peHeaderOffset);
+
+            var secondsSince1970 = BitConverter.ToInt32(b, i + linkerTimestampOffset);
+            var dt = TimeZone
+                        .CurrentTimeZone
+                        .ToLocalTime(
+                            new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(secondsSince1970)
+                            );
+            return dt;
         }
 
         private class CompilerError
