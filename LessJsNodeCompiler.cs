@@ -140,6 +140,8 @@ namespace Cassette.Stylesheets
                 System.Threading.Thread.Sleep(SLEEP_AMOUNT);
             if (compileException != null)
                 throw compileException;
+            if (compileResult == null)
+                throw new TimeoutException("node failed to compile and exit in a timely manner");
 
             return compileResult;
         }
