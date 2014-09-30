@@ -37,7 +37,7 @@ namespace Cassette.Stylesheets
         public void Compile_converts_LESS_into_CSS()
         {
             var css = compiler.Compile("@color: #4d926f; #header { color: @color; }", compileContext);
-            css.Output.ShouldEqual("#header {\n  color: #4d926f;\n}\n");
+            css.Output.ShouldEqual("#header {\n  color: #4d926f;\n}\n/*# sourceMappingURL=test.less.map */");
         }
         [Fact]
         public void Compile_converts_LESS_1_6_0_Features()

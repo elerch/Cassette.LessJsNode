@@ -114,7 +114,8 @@ namespace Cassette.Stylesheets
             string output = Path.GetTempFileName();
             // Assumes source is a Cassette.IO.FileSystemFile
             string absolutePath = (string)source.GetType().GetField("systemAbsoluteFilename", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance).GetValue(source);
-            string arguments = String.Format("less\\bin\\lessc --no-color --relative-urls \"{0}\" \"{1}\"", absolutePath, output);
+            var sourceMapUrl = source.FullPath.Substring(source.FullPath.LastIndexOf('/') + 1);
+            string arguments = String.Format("less\\bin\\lessc --no-color --source-map --source-map-less-inline --source-map-url=\"{2}.map\" --relative-urls \"{0}\" \"{1}\"", absolutePath, output, sourceMapUrl);
             string tempPath = GetExecutablePath();
 
             ProcessStartInfo start = new ProcessStartInfo(Path.Combine(tempPath, "node.exe")){
@@ -173,10 +174,13 @@ namespace Cassette.Stylesheets
         {
             string output = process.StartInfo.EnvironmentVariables["output"];
             string result = null;
+            string map = null;
             IEnumerable<string> paths = Enumerable.Empty<string>();
             if (File.Exists(output)) {
                 result = File.ReadAllText(output);
+                map = File.ReadAllText(output + ".map");
                 File.Delete(output);
+                File.Delete(output + ".map");
 
                 if (process.ExitCode == 0) {
                     using (var reader = process.StandardOutput) {
@@ -195,7 +199,9 @@ namespace Cassette.Stylesheets
                     }
                 }
             }
-            return new CompileResult(result, paths);
+            var rc = new CompileResult(result, paths);
+            rc.AddSourceMap(map);
+            return rc;
         }
 
         private CompilerError ParseError(string error)
