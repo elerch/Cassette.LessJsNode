@@ -385,6 +385,7 @@ var parseLessFile = function (e, data) {
                         if (options.verbose) {
                             console.log('lessc: wrote ' + output);
                         }
+						process.exit(0);
                     } else {
                         sys.print(css);
 		    }
